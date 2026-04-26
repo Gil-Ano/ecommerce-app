@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 function AdminPage() {
   const [name, setName] = useState("");
@@ -6,11 +7,12 @@ function AdminPage() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
+  const [stock, setStock] = useState("");
   const [loading, setLoading] = useState(false);
 
   const generateDescription = async () => {
     if (!name || !category) {
-      alert("Enter product name and category first");
+      toast.error("Enter product name and category first");
       return;
     }
     setLoading(true);
@@ -25,8 +27,9 @@ function AdminPage() {
       );
       const data = await res.json();
       setDescription(data.description);
+      toast.success("Description generated!");
     } catch (err) {
-      alert("Failed to generate description");
+      toast.error("Failed to generate description");
     }
     setLoading(false);
   };
@@ -34,6 +37,10 @@ function AdminPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in as admin");
+      return;
+    }
     try {
       const res = await fetch("http://localhost:5000/api/products", {
         method: "POST",
@@ -41,21 +48,29 @@ function AdminPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, price, category, image, description }),
+        body: JSON.stringify({
+          name,
+          price: Number(price),
+          category,
+          image,
+          description,
+          stock: Number(stock),
+        }),
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Product added successfully");
+        toast.success("Product added successfully");
         setName("");
         setPrice("");
         setCategory("");
         setImage("");
         setDescription("");
+        setStock("");
       } else {
-        alert(data.message);
+        toast.error(data.message);
       }
     } catch (err) {
-      alert("Failed to add product");
+      toast.error("Failed to add product");
     }
   };
 
@@ -88,6 +103,14 @@ function AdminPage() {
           required
         />
         <input
+          type="number"
+          placeholder="Stock"
+          value={stock}
+          onChange={(e) => setStock(e.target.value)}
+          className="border rounded px-4 py-2"
+          required
+        />
+        <input
           type="text"
           placeholder="Image URL"
           value={image}
@@ -108,7 +131,7 @@ function AdminPage() {
             onClick={generateDescription}
             className="bg-blue-600 text-white py-2 rounded hover:bg-blue-500"
           >
-            {loading ? "Generating..." : "Generate Description with AI"}
+            {loading ? "Generating..." : "Generate Description with AI ✨"}
           </button>
         </div>
         <button
