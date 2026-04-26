@@ -18,7 +18,7 @@ function Navbar() {
   return (
     <nav className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
       <Link to="/" className="text-xl font-bold text-white">
-        ShopMERN
+        NovaMart
       </Link>
       <div className="flex gap-6 items-center">
         <Link to="/cart" className="hover:text-yellow-400">
