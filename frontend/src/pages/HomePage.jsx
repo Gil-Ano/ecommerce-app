@@ -7,7 +7,7 @@ function HomePage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch("https://novamart-backend-9nk4.onrender.com/api/products")
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);

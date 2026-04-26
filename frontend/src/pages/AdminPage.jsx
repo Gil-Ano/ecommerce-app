@@ -18,7 +18,7 @@ function AdminPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        "http://localhost:5000/api/products/generate-description",
+        "https://novamart-backend-9nk4.onrender.com/api/products/generate-description",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -42,21 +42,24 @@ function AdminPage() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        "https://novamart-backend-9nk4.onrender.com/api/products",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+            price: Number(price),
+            category,
+            image,
+            description,
+            stock: Number(stock),
+          }),
         },
-        body: JSON.stringify({
-          name,
-          price: Number(price),
-          category,
-          image,
-          description,
-          stock: Number(stock),
-        }),
-      });
+      );
       const data = await res.json();
       if (res.ok) {
         toast.success("Product added successfully");

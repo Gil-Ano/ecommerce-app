@@ -11,7 +11,7 @@ function OrderHistoryPage() {
       navigate("/login");
       return;
     }
-    fetch("http://localhost:5000/api/orders/myorders", {
+    fetch("https://novamart-backend-9nk4.onrender.com/api/orders/myorders", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

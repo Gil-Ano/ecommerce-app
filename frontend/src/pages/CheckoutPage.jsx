@@ -24,18 +24,21 @@ function CheckoutPage() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        "https://novamart-backend-9nk4.onrender.com/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            items: cart,
+            shippingAddress: { address, city, country },
+            total,
+          }),
         },
-        body: JSON.stringify({
-          items: cart,
-          shippingAddress: { address, city, country },
-          total,
-        }),
-      });
+      );
       const data = await res.json();
       if (res.ok) {
         localStorage.removeItem("cart");
