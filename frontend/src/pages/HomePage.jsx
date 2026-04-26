@@ -1,51 +1,29 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const products = [
-  {
-    _id: "1",
-    name: "Nike Air Max",
-    price: 120,
-    category: "Shoes",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-  },
-  {
-    _id: "2",
-    name: "Leather Jacket",
-    price: 250,
-    category: "Clothing",
-    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400",
-  },
-  {
-    _id: "3",
-    name: "Apple Watch",
-    price: 399,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-  },
-  {
-    _id: "4",
-    name: "Sunglasses",
-    price: 89,
-    category: "Accessories",
-    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400",
-  },
-  {
-    _id: "5",
-    name: "Backpack",
-    price: 75,
-    category: "Bags",
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-  },
-  {
-    _id: "6",
-    name: "Wireless Headphones",
-    price: 199,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-  },
-];
-
 function HomePage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to load products");
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading)
+    return <div className="text-center mt-20 text-xl">Loading products...</div>;
+  if (error)
+    return <div className="text-center mt-20 text-red-500">{error}</div>;
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Latest Products</h1>

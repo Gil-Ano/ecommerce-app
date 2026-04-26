@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
@@ -18,13 +21,15 @@ function LoginPage() {
       if (data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success("Logged in successfully");
         navigate("/");
       } else {
-        alert(data.message);
+        toast.error(data.message);
       }
     } catch (err) {
-      alert("Login failed");
+      toast.error("Login failed");
     }
+    setLoading(false);
   };
 
   return (
@@ -49,9 +54,10 @@ function LoginPage() {
         />
         <button
           type="submit"
-          className="bg-gray-900 text-white py-2 rounded hover:bg-gray-700"
+          disabled={loading}
+          className="bg-gray-900 text-white py-2 rounded hover:bg-gray-700 disabled:opacity-50"
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
       <p className="mt-4 text-sm">

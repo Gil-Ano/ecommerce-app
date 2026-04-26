@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
@@ -19,13 +22,15 @@ function RegisterPage() {
       if (data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success("Account created successfully");
         navigate("/");
       } else {
-        alert(data.message);
+        toast.error(data.message);
       }
     } catch (err) {
-      alert("Registration failed");
+      toast.error("Registration failed");
     }
+    setLoading(false);
   };
 
   return (
@@ -58,9 +63,10 @@ function RegisterPage() {
         />
         <button
           type="submit"
-          className="bg-gray-900 text-white py-2 rounded hover:bg-gray-700"
+          disabled={loading}
+          className="bg-gray-900 text-white py-2 rounded hover:bg-gray-700 disabled:opacity-50"
         >
-          Register
+          {loading ? "Creating account..." : "Register"}
         </button>
       </form>
       <p className="mt-4 text-sm">

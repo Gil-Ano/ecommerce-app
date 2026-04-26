@@ -1,63 +1,28 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
-const products = [
-  {
-    _id: "1",
-    name: "Nike Air Max",
-    price: 120,
-    category: "Shoes",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-    description:
-      "Premium running shoes with air cushioning for maximum comfort.",
-  },
-  {
-    _id: "2",
-    name: "Leather Jacket",
-    price: 250,
-    category: "Clothing",
-    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400",
-    description: "Classic genuine leather jacket, perfect for any occasion.",
-  },
-  {
-    _id: "3",
-    name: "Apple Watch",
-    price: 399,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-    description: "Smart watch with health tracking and notifications.",
-  },
-  {
-    _id: "4",
-    name: "Sunglasses",
-    price: 89,
-    category: "Accessories",
-    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400",
-    description: "UV400 polarized sunglasses for all weather conditions.",
-  },
-  {
-    _id: "5",
-    name: "Backpack",
-    price: 75,
-    category: "Bags",
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-    description: "Durable 30L backpack with laptop compartment.",
-  },
-  {
-    _id: "6",
-    name: "Wireless Headphones",
-    price: 199,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-    description: "Noise cancelling wireless headphones with 30hr battery.",
-  },
-];
 
 function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p._id === id);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!product) return <div>Product not found</div>;
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/products/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading)
+    return <div className="text-center mt-20 text-xl">Loading...</div>;
+  if (!product)
+    return <div className="text-center mt-20">Product not found</div>;
 
   const addToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -84,6 +49,9 @@ function ProductPage() {
           <p className="text-gray-500 mb-4">{product.category}</p>
           <p className="text-2xl font-bold mb-4">${product.price}</p>
           <p className="text-gray-700 mb-6">{product.description}</p>
+          <p className="text-sm text-gray-500 mb-6">
+            Stock: {product.stock} units
+          </p>
           <button
             onClick={addToCart}
             className="bg-gray-900 text-white px-6 py-3 rounded hover:bg-gray-700 w-full"
